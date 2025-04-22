@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  # Standalone PostgreSQL DB 1
+  db1:
+    image: postgres:15
+    container_name: db1
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: db1
+    ports:
+      - "5433:5432"
+    volumes:
+      - db1_data:/var/lib/postgresql/data
+
+  # Standalone PostgreSQL DB 2
+  db2:
+    image: postgres:15
+    container_name: db2
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: db2
+    ports:
+      - "5434:5432"
+    volumes:
+      - db2_data:/var/lib/postgresql/data
+
+  # Standalone PostgreSQL DB 3
+  db3:
+    image: postgres:15
+    container_name: db3
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: db3
+    ports:
+      - "5435:5432"
+    volumes:
+      - db3_data:/var/lib/postgresql/data
+
+  # Dedicated PostgreSQL DB for Keycloak
+  keycloak_db:
+    image: postgres:15
+    container_name: keycloak_db
+    environment:
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloakpass
+      POSTGRES_DB: keycloakdb
+    volumes:
+      - keycloak_data:/var/lib/postgresql/data
+
+  # Keycloak server
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0
+    container_name: keycloak
+    command: start-dev
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak_db:5432/keycloakdb
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloakpass
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: adminpass
+    ports:
+      - "8080:8080"
+    depends_on:
+      - keycloak_db
+
+  # RabbitMQ with management
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: rabbit
+      RABBITMQ_DEFAULT_PASS: rabbitpass
+    ports:
+      - "5672:5672"     # AMQP
+      - "15672:15672"   # Management UI
+
+volumes:
+  db1_data:
+  db2_data:
+  db3_data:
+  keycloak_data:
