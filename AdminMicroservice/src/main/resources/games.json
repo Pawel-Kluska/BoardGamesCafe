@@ -1,0 +1,12 @@
+[
+  { "maxPlayers": 4, "minPlayers": 2, "name": "Catan" },
+  { "maxPlayers": 6, "minPlayers": 2, "name": "Monopoly" },
+  { "maxPlayers": 2, "minPlayers": 2, "name": "Chess" },
+  { "maxPlayers": 4, "minPlayers": 2, "name": "Ticket to Ride" },
+  { "maxPlayers": 10, "minPlayers": 4, "name": "Werewolf" },
+  { "maxPlayers": 5, "minPlayers": 2, "name": "Carcassonne" },
+  { "maxPlayers": 8, "minPlayers": 3, "name": "Exploding Kittens" },
+  { "maxPlayers": 6, "minPlayers": 2, "name": "Risk" },
+  { "maxPlayers": 2, "minPlayers": 2, "name": "Go" },
+  { "maxPlayers": 7, "minPlayers": 3, "name": "Dixit" }
+]
