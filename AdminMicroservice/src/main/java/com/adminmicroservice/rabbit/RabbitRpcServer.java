@@ -6,6 +6,7 @@ import com.adminmicroservice.entities.Table;
 import com.adminmicroservice.services.GameService;
 import com.adminmicroservice.services.TableService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -57,6 +58,7 @@ Delete table:
 
 //TODO (jasiex01): add error handling
 @Component
+@Slf4j
 public class RabbitRpcServer {
 
     private final GameService gameService;
@@ -72,7 +74,7 @@ public class RabbitRpcServer {
     @RabbitListener(queues = "admin.rpc.queue")
     public String handleIncomingRpc(String requestJson) {
         try {
-            System.out.println("Received RPC request: " + requestJson);
+            log.info("Received RPC request: " + requestJson);
 
             JsonNode requestNode = objectMapper.readTree(requestJson);
             String action = requestNode.has("action") ? requestNode.get("action").asText() : null;
@@ -83,97 +85,97 @@ public class RabbitRpcServer {
 
             switch (action) {
                 case "getAllGamesAndTables":
-                    System.out.println("Processing 'getAllGamesAndTables' request.");
+                    log.info("Processing 'getAllGamesAndTables' request.");
                     return handleGetAllGamesAndTables();
                 case "addNewGame":
-                    System.out.println("Processing 'addNewGame' request.");
+                    log.info("Processing 'addNewGame' request.");
                     return handleAddNewGame(requestJson);
                 case "updateGame":
-                    System.out.println("Processing 'updateGame' request.");
+                    log.info("Processing 'updateGame' request.");
                     return handleUpdateGame(requestJson);
                 case "deleteGame":
-                    System.out.println("Processing 'deleteGame' request.");
+                    log.info("Processing 'deleteGame' request.");
                     return handleDeleteGame(requestJson);
                 case "addNewTable":
-                    System.out.println("Processing 'addNewTable' request.");
+                    log.info("Processing 'addNewTable' request.");
                     return handleAddNewTable(requestJson);
                 case "updateTable":
-                    System.out.println("Processing 'updateTable' request.");
+                    log.info("Processing 'updateTable' request.");
                     return handleUpdateTable(requestJson);
                 case "deleteTable":
-                    System.out.println("Processing 'deleteTable' request.");
+                    log.info("Processing 'deleteTable' request.");
                     return handleDeleteTable(requestJson);
                 default:
-                    System.out.println("Invalid action: " + action);
+                    log.info("Invalid action: " + action);
                     return "{\"status\": \"error\", \"message\": \"Invalid action\"}";
             }
         } catch (Exception e) {
-            System.out.println("Error processing RPC request: " + e.getMessage());
+            log.error("Error processing RPC request: " + e.getMessage());
             return "{\"status\": \"error\", \"message\": \"Failed to process the request\"}";
         }
     }
 
     private String handleGetAllGamesAndTables() throws Exception {
-        System.out.println("Fetching all games and tables.");
+        log.info("Fetching all games and tables.");
         AllGamesAndTablesDto response = new AllGamesAndTablesDto();
         response.setGames(gameService.getAllGames());
         response.setTables(tableService.getAllTables());
         String responseJson = objectMapper.writeValueAsString(response);
-        System.out.println("Response: " + responseJson);
+        log.info("Response: " + responseJson);
         return responseJson;
     }
 
     private String handleAddNewGame(String requestJson) throws Exception {
-        System.out.println("Adding a new game: " + requestJson);
+        log.info("Adding a new game: " + requestJson);
         Game game = objectMapper.readValue(requestJson, Game.class);
         Game savedGame = gameService.addNewGame(game);
         String responseJson = objectMapper.writeValueAsString(savedGame);
-        System.out.println("New game added: " + responseJson);
+        log.info("New game added: " + responseJson);
         return responseJson;
     }
 
     private String handleUpdateGame(String requestJson) throws Exception {
-        System.out.println("Updating game: " + requestJson);
+        log.info("Updating game: " + requestJson);
         Game game = objectMapper.readValue(requestJson, Game.class);
         Game updatedGame = gameService.updateGame(game);
         String responseJson = objectMapper.writeValueAsString(updatedGame);
-        System.out.println("Game updated: " + responseJson);
+        log.info("Game updated: " + responseJson);
         return responseJson;
     }
 
     private String handleDeleteGame(String requestJson) throws Exception {
-        System.out.println("Deleting game: " + requestJson);
+        log.info("Deleting game: " + requestJson);
         Game game = objectMapper.readValue(requestJson, Game.class);
         gameService.deleteGame(game);
         String responseJson = "{\"status\": \"ok\", \"message\": \"Game deleted successfully\"}";
-        System.out.println("Game deleted: " + responseJson);
+        log.info("Game deleted: " + responseJson);
         return responseJson;
     }
 
     private String handleAddNewTable(String requestJson) throws Exception {
-        System.out.println("Adding a new table: " + requestJson);
+        log.info("Adding a new table: " + requestJson);
         Table table = objectMapper.readValue(requestJson, Table.class);
         Table savedTable = tableService.addNewTable(table);
         String responseJson = objectMapper.writeValueAsString(savedTable);
-        System.out.println("New table added: " + responseJson);
+        log.info("New table added: " + responseJson);
         return responseJson;
     }
 
     private String handleUpdateTable(String requestJson) throws Exception {
-        System.out.println("Updating table: " + requestJson);
+        log.info("Updating table: " + requestJson);
         Table table = objectMapper.readValue(requestJson, Table.class);
         Table updatedTable = tableService.updateTable(table);
         String responseJson = objectMapper.writeValueAsString(updatedTable);
-        System.out.println("Table updated: " + responseJson);
+        log.info("Table updated: " + responseJson);
         return responseJson;
     }
 
     private String handleDeleteTable(String requestJson) throws Exception {
-        System.out.println("Deleting table: " + requestJson);
+        log.info("Deleting table: " + requestJson);
         Table table = objectMapper.readValue(requestJson, Table.class);
         tableService.deleteTable(table);
         String responseJson = "{\"status\": \"ok\", \"message\": \"Table deleted successfully\"}";
-        System.out.println("Table deleted: " + responseJson);
+        log.info("Table deleted: " + responseJson);
         return responseJson;
     }
 }

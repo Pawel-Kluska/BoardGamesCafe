@@ -1,0 +1,29 @@
+[
+  {
+    "email": "alice@example.com",
+    "tableId": 1,
+    "gameId": 2,
+    "date": "2025-06-01",
+    "startTime": "14:00",
+    "endTime": "16:00",
+    "status": "PENDING"
+  },
+  {
+    "email": "bob@example.com",
+    "tableId": 2,
+    "gameId": 1,
+    "date": "2025-06-02",
+    "startTime": "10:00",
+    "endTime": "11:30",
+    "status": "CONFIRMED"
+  },
+  {
+    "email": "carol@example.com",
+    "tableId": 3,
+    "gameId": 3,
+    "date": "2025-06-03",
+    "startTime": "18:00",
+    "endTime": "20:00",
+    "status": "CANCELED"
+  }
+]
