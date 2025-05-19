@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/AdminMicroservice.main.iml" filepath="$PROJECT_DIR$/.idea/modules/AdminMicroservice.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/BoardGamesCafe.iml" filepath="$PROJECT_DIR$/.idea/BoardGamesCafe.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ReservationMicroservice.main.iml" filepath="$PROJECT_DIR$/.idea/modules/ReservationMicroservice.main.iml" />
     </modules>
   </component>
 </project>

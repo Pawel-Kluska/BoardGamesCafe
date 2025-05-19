@@ -16,15 +16,14 @@ import java.util.List;
 public class DataLoader {
 
     @Bean
-    CommandLineRunner loadData(ReservationRepository repository) {
+    CommandLineRunner loadData(ReservationRepository repository, ObjectMapper objectMapper) {
         return args -> {
-            ObjectMapper mapper = new ObjectMapper();
 
             // GAMES
             if (repository.count() == 0) {
                 try (InputStream input = getClass().getResourceAsStream("/reservations.json")) {
                     if (input != null) {
-                        List<Reservation> reservations = mapper.readValue(input, new TypeReference<>() {});
+                        List<Reservation> reservations = objectMapper.readValue(input, new TypeReference<>() {});
                         repository.saveAll(reservations);
 
                     } else {

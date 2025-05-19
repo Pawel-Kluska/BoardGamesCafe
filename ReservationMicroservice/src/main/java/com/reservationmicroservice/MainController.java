@@ -19,17 +19,19 @@ public class MainController {
 
     private final ReservationService reservationService;
 
-    @GetMapping("/{email}")
-    public ResponseEntity<List<ReservationDto>> getAllRepositoriesByEmail(@PathVariable String email) throws JsonProcessingException {
-        List<ReservationDto> reservations = reservationService.getReservations(email);
-        return ResponseEntity.ok(reservations);
-    }
+    @GetMapping
+    public ResponseEntity<List<ReservationDto>> getAll(
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String date) throws JsonProcessingException {
 
-    @GetMapping("/{date}")
-    public ResponseEntity<List<ReservationDto>> getAllRepositoriesByDate(@PathVariable String date) throws JsonProcessingException {
-        LocalDate localDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        List<ReservationDto> reservations = reservationService.getReservations(localDate);
-        return ResponseEntity.ok(reservations);
+        if (email != null) {
+            return ResponseEntity.ok(reservationService.getReservations(email));
+        } else if (date != null) {
+            LocalDate localDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            return ResponseEntity.ok(reservationService.getReservations(localDate));
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PostMapping

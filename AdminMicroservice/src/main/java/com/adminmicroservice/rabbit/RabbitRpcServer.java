@@ -76,8 +76,12 @@ public class RabbitRpcServer {
         try {
             log.info("Received RPC request: " + requestJson);
 
+            if (requestJson.startsWith("\"") && requestJson.endsWith("\"")) {
+                requestJson = objectMapper.readValue(requestJson, String.class); // unescape
+            }
+
             JsonNode requestNode = objectMapper.readTree(requestJson);
-            String action = requestNode.has("action") ? requestNode.get("action").asText() : null;
+            String action = requestNode.path("action").asText(null);
 
             if (action == null) {
                 return "{\"status\": \"error\", \"message\": \"No action field present\"}";
