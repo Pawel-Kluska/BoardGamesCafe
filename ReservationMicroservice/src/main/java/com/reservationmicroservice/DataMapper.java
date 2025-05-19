@@ -18,6 +18,7 @@ public class DataMapper {
         ReservationDto reservationDto = new ReservationDto();
         reservationDto.setId(reservation.getId());
         reservationDto.setStatus(reservation.getStatus());
+        reservationDto.setDate(reservation.getDate());
         reservationDto.setStartTime(reservation.getStartTime());
         reservationDto.setEndTime(reservation.getEndTime());
         reservationDto.setEmail(reservation.getEmail());

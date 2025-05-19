@@ -37,14 +37,15 @@ public class ReservationService {
 
     public ReservationDto createReservation(Reservation reservation) throws JsonProcessingException {
         reservation.setId(null);
-        Reservation saved = reservationRepository.save(reservation);
+
         AllGamesAndTablesDto allGamesAndTables = rabbitClient.getAllGamesAndTables();
         TableDto table = allGamesAndTables.getTables()
-                .stream().filter(elem -> elem.getId().equals(saved.getTableId()))
+                .stream().filter(elem -> elem.getId().equals(reservation.getTableId()))
                 .findFirst().orElseThrow(EntityNotFoundException::new);
         GameDto game = allGamesAndTables.getGames()
-                .stream().filter(elem -> elem.getId().equals(saved.getGameId()))
+                .stream().filter(elem -> elem.getId().equals(reservation.getGameId()))
                 .findFirst().orElseThrow(EntityNotFoundException::new);
+        Reservation saved = reservationRepository.save(reservation);
         return dataMapper.mapToReservationDto(reservation, game, table);
     }
 
