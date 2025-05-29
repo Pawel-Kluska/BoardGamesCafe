@@ -22,6 +22,7 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final RabbitRpcClient rabbitClient;
     private final DataMapper dataMapper;
+    private final EmailService emailService;
 
     public List<ReservationDto> getReservations(String email) throws JsonProcessingException {
         List<Reservation> reservations = reservationRepository.findByEmail(email);
@@ -46,6 +47,15 @@ public class ReservationService {
                 .stream().filter(elem -> elem.getId().equals(reservation.getGameId()))
                 .findFirst().orElseThrow(EntityNotFoundException::new);
         Reservation saved = reservationRepository.save(reservation);
+
+        emailService.sendEmail(
+                reservation.getEmail(),
+                "Guest",
+                "Reservation Confirmation",
+                "Your reservation has been created for " + reservation.getDate() + " at " + reservation.getStartTime(),
+                "<p>Your reservation has been <strong>created</strong> for " + reservation.getDate() + " at " + reservation.getStartTime() + ".</p>"
+        );
+
         return dataMapper.mapToReservationDto(reservation, game, table);
     }
 
