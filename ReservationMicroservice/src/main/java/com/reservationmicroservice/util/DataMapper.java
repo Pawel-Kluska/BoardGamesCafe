@@ -1,4 +1,4 @@
-package com.reservationmicroservice;
+package com.reservationmicroservice.util;
 
 import com.reservationmicroservice.dto.GameDto;
 import com.reservationmicroservice.dto.ReservationDto;

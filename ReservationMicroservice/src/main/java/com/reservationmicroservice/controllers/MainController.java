@@ -1,4 +1,4 @@
-package com.reservationmicroservice;
+package com.reservationmicroservice.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.reservationmicroservice.dto.ReservationDto;

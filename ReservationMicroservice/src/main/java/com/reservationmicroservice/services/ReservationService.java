@@ -1,7 +1,7 @@
 package com.reservationmicroservice.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.reservationmicroservice.DataMapper;
+import com.reservationmicroservice.util.DataMapper;
 import com.reservationmicroservice.dto.AllGamesAndTablesDto;
 import com.reservationmicroservice.dto.GameDto;
 import com.reservationmicroservice.dto.ReservationDto;

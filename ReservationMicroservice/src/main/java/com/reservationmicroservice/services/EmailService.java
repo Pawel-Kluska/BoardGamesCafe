@@ -4,7 +4,6 @@ import com.mailersend.sdk.MailerSend;
 import com.mailersend.sdk.MailerSendResponse;
 import com.mailersend.sdk.emails.Email;
 import com.mailersend.sdk.exceptions.MailerSendException;
-import com.mailersend.sdk.recipients.Recipient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 

@@ -1,0 +1,29 @@
+[
+  {
+    "gameId": 1,
+    "tableId": 5,
+    "date": "2025-06-04",
+    "startTime": "18:00:00",
+    "endTime": "20:00:00",
+    "sessionUsers": [
+      {
+        "email": "alice@example.com"
+      },
+      {
+        "email": "bob@example.com"
+      }
+    ]
+  },
+  {
+    "gameId": 1,
+    "tableId": 6,
+    "date": "2025-06-05",
+    "startTime": "20:00:00",
+    "endTime": "22:00:00",
+    "sessionUsers": [
+      {
+        "email": "charlie@example.com"
+      }
+    ]
+  }
+]
