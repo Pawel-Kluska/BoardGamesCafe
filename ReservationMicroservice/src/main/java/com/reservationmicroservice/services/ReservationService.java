@@ -69,10 +69,27 @@ public class ReservationService {
         GameDto game = allGamesAndTables.getGames()
                 .stream().filter(elem -> elem.getId().equals(updated.getGameId()))
                 .findFirst().orElseThrow(EntityNotFoundException::new);
-        return dataMapper.mapToReservationDto(reservation, game, table);
+
+        emailService.sendEmail(
+                updated.getEmail(),
+                "Guest",
+                "Reservation Updated",
+                "Your reservation has been updated to " + updated.getDate() + " at " + updated.getStartTime(),
+                "<p>Your reservation has been <strong>updated</strong> to " + updated.getDate() + " at " + updated.getStartTime() + ".</p>"
+        );
+
+        return dataMapper.mapToReservationDto(updated, game, table);
     }
 
     public void deleteReservation(Reservation reservation) {
         reservationRepository.deleteById(reservation.getId());
+
+        emailService.sendEmail(
+                reservation.getEmail(),
+                "Guest",
+                "Reservation Cancelled",
+                "Your reservation for " + reservation.getDate() + " at " + reservation.getStartTime() + " has been cancelled.",
+                "<p>Your reservation for <strong>" + reservation.getDate() + " at " + reservation.getStartTime() + "</strong> has been <strong>cancelled</strong>.</p>"
+        );
     }
 }
