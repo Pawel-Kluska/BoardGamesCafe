@@ -1,7 +1,6 @@
 package com.reservationmicroservice.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.reservationmicroservice.util.DataMapper;
 import com.reservationmicroservice.dto.AllGamesAndTablesDto;
 import com.reservationmicroservice.dto.GameDto;
 import com.reservationmicroservice.dto.ReservationDto;
@@ -9,6 +8,7 @@ import com.reservationmicroservice.dto.TableDto;
 import com.reservationmicroservice.entities.Reservation;
 import com.reservationmicroservice.rabbit.RabbitRpcClient;
 import com.reservationmicroservice.repositories.ReservationRepository;
+import com.reservationmicroservice.util.DataMapper;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -38,7 +38,14 @@ public class ReservationService {
 
     public ReservationDto createReservation(Reservation reservation) throws JsonProcessingException {
         reservation.setId(null);
+        reservation.setEndTime(reservation.getStartTime().plusHours(2));
 
+        reservationRepository.findByDate(reservation.getDate()).stream()
+                .filter(res -> res.getStartTime().equals(reservation.getStartTime()) && res.getTableId().equals(reservation.getTableId()))
+                .findFirst()
+                .ifPresent(res -> {
+                    throw new IllegalArgumentException("Reservation already exists for this date and time.");
+                });
         AllGamesAndTablesDto allGamesAndTables = rabbitClient.getAllGamesAndTables();
         TableDto table = allGamesAndTables.getTables()
                 .stream().filter(elem -> elem.getId().equals(reservation.getTableId()))
@@ -56,20 +63,29 @@ public class ReservationService {
                 "<p>Your reservation has been <strong>created</strong> for " + reservation.getDate() + " at " + reservation.getStartTime() + ".</p>"
         );
 
-        return dataMapper.mapToReservationDto(reservation, game, table);
+        return dataMapper.mapToReservationDto(saved, game, table);
     }
 
     public ReservationDto updateReservation(Reservation reservation) throws JsonProcessingException {
         if (reservation.getId() == null) throw new EntityNotFoundException();
-        Reservation updated = reservationRepository.save(reservation);
+
+        reservationRepository.findByDate(reservation.getDate()).stream()
+                .filter(res -> res.getStartTime().equals(reservation.getStartTime())
+                        && res.getTableId().equals(reservation.getTableId())
+                        && !res.getId().equals(reservation.getId()))
+                .findFirst()
+                .ifPresent(res -> {
+                    throw new IllegalArgumentException("Reservation already exists for this date and time.");
+                });
+        reservation.setEndTime(reservation.getStartTime().plusHours(2));
         AllGamesAndTablesDto allGamesAndTables = rabbitClient.getAllGamesAndTables();
         TableDto table = allGamesAndTables.getTables()
-                .stream().filter(elem -> elem.getId().equals(updated.getTableId()))
+                .stream().filter(elem -> elem.getId().equals(reservation.getTableId()))
                 .findFirst().orElseThrow(EntityNotFoundException::new);
         GameDto game = allGamesAndTables.getGames()
-                .stream().filter(elem -> elem.getId().equals(updated.getGameId()))
+                .stream().filter(elem -> elem.getId().equals(reservation.getGameId()))
                 .findFirst().orElseThrow(EntityNotFoundException::new);
-
+        Reservation updated = reservationRepository.save(reservation);
         emailService.sendEmail(
                 updated.getEmail(),
                 "Guest",

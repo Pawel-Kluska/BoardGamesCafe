@@ -25,4 +25,14 @@ public class Session {
     @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<SessionUser> sessionUsers;
+
+    public void addSessionUser(SessionUser sessionUser) {
+        sessionUsers.add(sessionUser);
+        sessionUser.setSession(this);
+    }
+
+    public void removeSessionUser(SessionUser sessionUser) {
+        sessionUsers.remove(sessionUser);
+        sessionUser.setSession(null);
+    }
 }

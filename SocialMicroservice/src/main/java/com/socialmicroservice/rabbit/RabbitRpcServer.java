@@ -103,7 +103,7 @@ public class RabbitRpcServer {
     private String handleCreateReservation(String requestJson) throws Exception {
         log.info("Creating session: " + requestJson);
         Session session = objectMapper.readValue(requestJson, Session.class);
-        Session newReservation = socialService.createSession(session);
+        Session newReservation = socialService.addToSession(session);
         String responseJson = objectMapper.writeValueAsString(newReservation);
         log.info("Created reservation: " + responseJson);
         return responseJson;

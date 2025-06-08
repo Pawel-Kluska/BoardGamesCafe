@@ -19,7 +19,7 @@ public class MainController {
 
     @GetMapping
     public ResponseEntity<?> getSessions(@RequestParam(required = false) String email,
-                                  @RequestParam(required = false) String date) throws JsonProcessingException {
+                                         @RequestParam(required = false) String date) throws JsonProcessingException {
         if (email != null) {
             return ResponseEntity.ok(socialService.getSessions(email));
         } else if (date != null) {
@@ -31,8 +31,19 @@ public class MainController {
     }
 
     @PostMapping
-    public ResponseEntity<Session> createSession(@RequestBody Session sessionData) {
-        return ResponseEntity.ok(socialService.createSession(sessionData));
+    public ResponseEntity<Session> addToSession(@RequestBody Session sessionData) throws JsonProcessingException {
+        return ResponseEntity.ok(socialService.addToSession(sessionData));
+    }
+
+    @DeleteMapping("/{sessionId}")
+    public ResponseEntity<?> deleteSession(@PathVariable Long sessionId,
+                                           @RequestParam String email) {
+        try {
+            socialService.deleteFromSession(sessionId, email);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error deleting session: " + e.getMessage());
+        }
     }
 
 }
