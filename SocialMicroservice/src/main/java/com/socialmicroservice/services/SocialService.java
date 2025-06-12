@@ -84,7 +84,7 @@ public class SocialService {
             }
 
             emailService.sendEmail(
-                    userEmail,
+                    sessionData.getSessionUsers().get(0).getEmail(),
                     "Guest",
                     "You've been added to a session",
                     "You have been added to a game session on " + session.getDate() + " at " + session.getStartTime(),
@@ -95,7 +95,7 @@ public class SocialService {
         } else {
 
             emailService.sendEmail(
-                    userEmail,
+                    sessionData.getSessionUsers().get(0).getEmail(),
                     "Guest",
                     "Session created",
                     "You have created a session on " + newSession.getDate() + " at " + newSession.getStartTime(),
