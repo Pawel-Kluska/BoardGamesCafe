@@ -29,6 +29,7 @@ public class SocialService {
     private final DataMapper dataMapper;
     private final RabbitRpcClient rabbitClient;
     private final KeycloakUserService keycloakUserService;
+    private final EmailService emailService;
 
     public List<SessionDto> getSessions(String email) throws JsonProcessingException {
         List<Session> sessions = socialRepository.findBySessionUsers_Email(email);
@@ -82,8 +83,25 @@ public class SocialService {
                         );
             }
 
+            emailService.sendEmail(
+                    userEmail,
+                    "Guest",
+                    "You've been added to a session",
+                    "You have been added to a game session on " + session.getDate() + " at " + session.getStartTime(),
+                    "<p>You have been <strong>added</strong> to a session on " + session.getDate() + " at " + session.getStartTime() + ".</p>"
+            );
+
             return socialRepository.save(session);
         } else {
+
+            emailService.sendEmail(
+                    userEmail,
+                    "Guest",
+                    "Session created",
+                    "You have created a session on " + newSession.getDate() + " at " + newSession.getStartTime(),
+                    "<p>You have <strong>created</strong> a session on " + newSession.getDate() + " at " + newSession.getStartTime() + ".</p>"
+            );
+
             return createNewSession(sessionData, allAvailableTables);
         }
     }
@@ -111,6 +129,14 @@ public class SocialService {
 
         AllGamesAndTablesDto allGamesAndTables = rabbitClient.getAllGamesAndTables();
         List<TableDto> allAvailableTables = getAvailableTables(sessionsAtTime, allGamesAndTables);
+
+        emailService.sendEmail(
+                email,
+                "Guest",
+                "You've been removed from a session",
+                "You have been removed from a session on " + session.getDate() + " at " + session.getStartTime(),
+                "<p>You have been <strong>removed</strong> from the session on " + session.getDate() + " at " + session.getStartTime() + ".</p>"
+        );
 
         if (existingSession.isPresent()) {
             Session existing = existingSession.get();
