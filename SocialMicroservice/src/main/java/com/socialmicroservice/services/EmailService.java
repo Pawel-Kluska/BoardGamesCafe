@@ -1,4 +1,4 @@
-package com.reservationmicroservice.services;
+package com.socialmicroservice.services;
 
 import com.mailersend.sdk.MailerSend;
 import com.mailersend.sdk.MailerSendResponse;

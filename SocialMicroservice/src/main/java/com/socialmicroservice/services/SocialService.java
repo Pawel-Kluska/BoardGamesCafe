@@ -94,6 +94,8 @@ public class SocialService {
             return socialRepository.save(session);
         } else {
 
+            Session newSession = createNewSession(sessionData, allAvailableTables);
+
             emailService.sendEmail(
                     sessionData.getSessionUsers().get(0).getEmail(),
                     "Guest",
@@ -102,7 +104,7 @@ public class SocialService {
                     "<p>You have <strong>created</strong> a session on " + newSession.getDate() + " at " + newSession.getStartTime() + ".</p>"
             );
 
-            return createNewSession(sessionData, allAvailableTables);
+            return newSession;
         }
     }
 
