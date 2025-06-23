@@ -24,7 +24,9 @@ public class GameService {
     }
 
     public Game updateGame(Game game) {
-        if (game.getId() == null) throw new EntityNotFoundException();
+        if (game.getId() == null) {
+            throw new EntityNotFoundException();
+        }
         return gameRepository.save(game);
     }
 

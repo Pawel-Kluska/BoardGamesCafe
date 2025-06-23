@@ -12,6 +12,7 @@ import java.time.format.DateTimeFormatter;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/sessions")
 public class MainController {
 
