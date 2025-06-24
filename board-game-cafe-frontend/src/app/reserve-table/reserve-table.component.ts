@@ -185,7 +185,7 @@ export class ReserveTableComponent{
 
       this.reservationService.addReservation(reservation).subscribe(() => {
         console.log('Reservation added successfully');
-        location.href = '/reservations/user';
+        location.href = '/reservations';
       });
     }
   }

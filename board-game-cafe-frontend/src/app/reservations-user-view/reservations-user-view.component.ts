@@ -77,7 +77,7 @@ export class ReservationsUserViewComponent implements OnInit {
 
   getTableLabel(tableId: number): string {
     const table = this.tables.find(t => t.id === tableId);
-    return table ? `Table ${table.number} (${table.seats} seats)` : 'Unknown Table';
+    return table ? `${table.number} (${table.seats} seats)` : 'Unknown Table';
   }
 
   getStatusClass(status: string): string {
@@ -112,7 +112,7 @@ export class ReservationsUserViewComponent implements OnInit {
   }
 
   getRandomColor(seed: number): string {
-    const colors = ['#fa73dd', '#ef73fa',  '#cf73fa', '#df99ff', '#c273fa','#df73fa'];
+    const colors = ['#fdbae9', '#f7bafa', '#e9bafa', '#efccff', '#dba0f2', '#efbafa'];
     return colors[seed % colors.length];
   }
 }

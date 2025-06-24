@@ -11,6 +11,8 @@ import { CreateTableDialogComponent } from '../create-table-dialog/create-table-
 import { EditTableDialogComponent } from '../edit-table-dialog/edit-table-dialog.component';
 import { DeleteDialogComponent } from '../delete-dialog/delete-dialog.component';
 import { EditGameDialogComponent } from '../edit-game-dialog/edit-game-dialog.component';
+import { KeycloakService } from 'keycloak-angular';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-games-view',
@@ -21,6 +23,7 @@ import { EditGameDialogComponent } from '../edit-game-dialog/edit-game-dialog.co
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
+    CommonModule,
     ],
   templateUrl: './games-view.component.html',
   styleUrl: './games-view.component.scss'
@@ -31,9 +34,11 @@ export class GamesViewComponent implements OnInit {
 
   displayedColumnsTables: string[] = ['id', 'number', 'seats',  'actions'];
   tables: Table[] = [];
+  userRoles: string[] = [];
   
   private adminService = inject(AdminService);
   private dialog = inject(MatDialog);
+  private keycloakService = inject(KeycloakService);
 
   ngOnInit(): void 
   {
@@ -50,6 +55,11 @@ export class GamesViewComponent implements OnInit {
         console.error('Error fetching games and tables:', error);
       }
     });
+    this.userRoles = this.keycloakService.getUserRoles();
+    if(!this.userRoles.includes('admin')) {
+      this.displayedColumnsGames = this.displayedColumnsGames.filter(col => col !== 'actions');
+      this.displayedColumnsTables = this.displayedColumnsTables.filter(col => col !== 'actions');
+    }
   }
 
   openCreateGameDialog() {

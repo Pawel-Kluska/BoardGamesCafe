@@ -1,5 +1,5 @@
 <mat-card>
-  <h2>📅 My Reservations</h2>
+  <h2 style="margin-left: 20px;"> My Reservations</h2>
 
   <div class="header-container">
   <!-- Filter by Date -->
@@ -31,7 +31,7 @@
         <p><b>Game:</b> {{ getGameName(reservation.gameId) }}</p>
         <p><b>Table:</b> {{ getTableLabel(reservation.tableId) }}</p>
       </div>
-      <div class="note-actions">
+      <div *ngIf="reservation.status === 'PENDING'" class="note-actions">
         <button mat-icon-button class="primary-icon-button" (click)="deleteReservation(reservation)">
           <mat-icon>cancel</mat-icon>
         </button>

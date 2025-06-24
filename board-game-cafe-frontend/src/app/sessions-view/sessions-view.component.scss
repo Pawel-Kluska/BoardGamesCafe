@@ -1,0 +1,32 @@
+.table-section{
+    margin-bottom: 50px;
+    margin-left: 30px;
+    max-width: 80%;
+}
+
+.header-section{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.primary-icon-button mat-icon {
+    color: #cd4688; // if using custom SCSS theme
+}
+
+.table-container {
+    max-height: 600px; 
+    overflow: auto;
+}
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.date-filter {
+  min-width: 220px;
+}

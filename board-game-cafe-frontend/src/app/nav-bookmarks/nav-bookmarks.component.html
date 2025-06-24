@@ -1,0 +1,12 @@
+<nav class="bookmark-nav">
+  <button
+    *ngFor="let link of links"
+    mat-raised-button
+    color="primary"
+    [routerLink]="link.path"
+    routerLinkActive="active"
+    [ngClass]="{ active: isActive(link.path) }"
+  >
+    {{ link.label }}
+  </button>
+</nav>

@@ -1,0 +1,17 @@
+.bookmark-nav {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+
+  button {
+    border-radius: 2rem;
+    text-transform: none;
+    font-weight: bold;
+    background-color: #e3f2fd;
+
+    &.active {
+      background-color: #d2097f;
+      color: white;
+    }
+  }
+}

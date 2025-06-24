@@ -2,7 +2,9 @@
     <div class="table-section">
         <div class="header-section">
             <h1>Games</h1>
-            <button mat-raised-button (click)="openCreateGameDialog()">Add Game <mat-icon>add</mat-icon></button>
+            <div *ngIf="userRoles.includes('admin')">
+                <button mat-raised-button (click)="openCreateGameDialog()">Add Game <mat-icon>add</mat-icon></button>
+            </div>
         </div>
 
         <div class="table-container">
@@ -51,9 +53,11 @@
 
         <div class="header-section">
             <h1>Tables</h1>
-            <button mat-raised-button color="primary" (click)="openCreateTableDialog()">Add Table <mat-icon>add</mat-icon></button>
+            <div *ngIf="userRoles.includes('admin')">
+                <button mat-raised-button color="primary" (click)="openCreateTableDialog()">Add Table <mat-icon>add</mat-icon></button>
+        
+            </div>
         </div>
-
         <div class="table-container">
             <table mat-table [dataSource]="tables" class="mat-elevation-z8">
 
