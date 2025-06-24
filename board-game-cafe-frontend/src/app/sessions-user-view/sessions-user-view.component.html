@@ -1,0 +1,32 @@
+<mat-card>
+  <h2 style="margin-left: 20px;">My Sessions</h2>
+
+  <div class="header-container">
+    <button mat-raised-button color="primary" (click)="redirectToGames()">Join Session</button>
+  </div>
+
+  <div class="sticky-notes-board">
+    <div
+      class="sticky-note"
+      *ngFor="let session of sessions"
+      [ngStyle]="{ 'background-color': getRandomColor(session.id || 1) }"
+    >
+      <div class="note-header">
+        <strong>{{ session.date }} {{ session.startTime }} - {{ session.endTime }}</strong>
+      </div>
+      <div class="note-body">
+        <p><b>Game:</b> {{ getGameName(session.gameId) }}</p>
+        <p><b>Table:</b> {{ getTableLabel(session.tableId) }}</p>
+        <p><b>Other Players:</b> </p>
+        <div *ngFor="let user of session.sessionUsers">
+          <p>{{ user.email }}</p>
+        </div>
+      </div>
+      <div class="note-actions">
+        <button mat-icon-button class="primary-icon-button" (click)="deleteSession(session)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+</mat-card>

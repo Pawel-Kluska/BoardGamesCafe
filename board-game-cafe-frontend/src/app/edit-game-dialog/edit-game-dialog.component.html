@@ -1,0 +1,22 @@
+<h2 mat-dialog-title>Edit Game</h2>
+<mat-dialog-content [formGroup]="gameForm">
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Game Name</mat-label>
+    <input matInput formControlName="name">
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Min Players</mat-label>
+    <input type="number" matInput formControlName="minPlayers">
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Max Players</mat-label>
+    <input type="number" matInput formControlName="maxPlayers">
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-flat-button color="primary" (click)="onSave()">Save</button>
+</mat-dialog-actions>

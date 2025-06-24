@@ -1,0 +1,64 @@
+<h2 mat-dialog-title>Edit Reservation</h2>
+
+<mat-dialog-content [formGroup]="reservationForm">
+  <!-- Email -->
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Email</mat-label>
+    <input matInput formControlName="email">
+  </mat-form-field>
+
+  <!-- Table -->
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Table</mat-label>
+    <mat-select formControlName="tableId">
+      <mat-option *ngFor="let table of tables" [value]="table.id">
+        Table {{ table.number }} ({{ table.seats }} seats)
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <!-- Game -->
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Game</mat-label>
+    <mat-select formControlName="gameId">
+      <mat-option *ngFor="let game of games" [value]="game.id">
+        {{ game.name }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <!-- Date -->
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Date</mat-label>
+    <input matInput [matDatepicker]="picker" formControlName="date">
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+
+  <!-- Start Time -->
+  <mat-form-field appearance="fill" class="half-width">
+    <mat-label>Start Time</mat-label>
+    <input matInput type="time" formControlName="startTime">
+  </mat-form-field>
+
+  <!-- End Time -->
+  <mat-form-field appearance="fill" class="half-width">
+    <mat-label>End Time</mat-label>
+    <input matInput type="time" formControlName="endTime">
+  </mat-form-field>
+
+  <!-- Status -->
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Status</mat-label>
+    <mat-select formControlName="status">
+      <mat-option value="PENDING">Pending</mat-option>
+      <mat-option value="CONFIRMED">Confirmed</mat-option>
+      <mat-option value="CANCELED">Canceled</mat-option>
+    </mat-select>
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-flat-button color="primary" [disabled]="!reservationForm.valid" (click)="onSave()">Save</button>
+</mat-dialog-actions>

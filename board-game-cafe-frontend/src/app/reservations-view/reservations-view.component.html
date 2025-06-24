@@ -1,0 +1,84 @@
+<div class="table-section">
+  <div class="header-section">
+    <h1>Reservations</h1>
+  </div>
+
+    <mat-form-field appearance="fill" class="date-filter">
+      <mat-label>Choose Date</mat-label>
+      <input matInput [matDatepicker]="filterPicker" (dateChange)="onFilterDateChange($event.value)" placeholder="Choose date" />
+      <mat-datepicker-toggle matSuffix [for]="filterPicker"></mat-datepicker-toggle>
+      <mat-datepicker #filterPicker></mat-datepicker>
+    </mat-form-field>
+
+  <div class="table-container">
+    <table mat-table [dataSource]="reservations" class="mat-elevation-z8 full-width">
+
+      <!-- ID Column -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef> ID </th>
+        <td mat-cell *matCellDef="let res"> {{res.id}} </td>
+      </ng-container>
+
+      <!-- Date Column -->
+      <ng-container matColumnDef="date">
+        <th mat-header-cell *matHeaderCellDef> Date </th>
+        <td mat-cell *matCellDef="let res"> {{res.date}} </td>
+      </ng-container>
+
+      <!-- Start Time -->
+      <ng-container matColumnDef="startTime">
+        <th mat-header-cell *matHeaderCellDef> Start </th>
+        <td mat-cell *matCellDef="let res"> {{res.startTime}} </td>
+      </ng-container>
+
+      <!-- End Time -->
+      <ng-container matColumnDef="endTime">
+        <th mat-header-cell *matHeaderCellDef> End </th>
+        <td mat-cell *matCellDef="let res"> {{res.endTime}} </td>
+      </ng-container>
+
+      <!-- Table Number -->
+      <ng-container matColumnDef="tableNumber">
+        <th mat-header-cell *matHeaderCellDef> Table </th>
+        <td mat-cell *matCellDef="let res"> {{res.tableNumber}} ({{res.tableSeats}} seats) </td>
+      </ng-container>
+
+      <!-- Game Name -->
+      <ng-container matColumnDef="gameName">
+        <th mat-header-cell *matHeaderCellDef> Game </th>
+        <td mat-cell *matCellDef="let res"> {{res.gameName}} </td>
+      </ng-container>
+
+      <!-- Email -->
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef> Email </th>
+        <td mat-cell *matCellDef="let res"> {{res.email}} </td>
+      </ng-container>
+
+      <!-- Status -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef> Status </th>
+        <td mat-cell *matCellDef="let res"> {{res.status}} </td>
+      </ng-container>
+
+      <!-- Actions -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef> Actions </th>
+        <td mat-cell *matCellDef="let res">
+          <button mat-icon-button class="primary-icon-button" (click)="acceptReservation(res)">
+             <mat-icon>check</mat-icon> 
+          </button> 
+          <!-- <button mat-icon-button class="primary-icon-button" (click)="openEditReservationDialog(res)">
+             <mat-icon>edit</mat-icon> 
+          </button>  -->
+          <button mat-icon-button class="primary-icon-button" (click)="openDeleteReservationDialog(res)">
+             <mat-icon>cancel</mat-icon> 
+          </button> 
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumnsReservations"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumnsReservations;"></tr>
+    </table>
+  </div>
+</div>

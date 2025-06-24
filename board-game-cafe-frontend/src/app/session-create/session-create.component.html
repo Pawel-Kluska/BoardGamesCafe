@@ -1,0 +1,64 @@
+<mat-card class="reservation-card">
+  <mat-card-header>
+    <mat-card-title> Create Session</mat-card-title>
+    <mat-card-subtitle>Schedule your game session</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <!-- Step 1: Select Date -->
+    <section class="step-section">
+      <h3>1. Choose Date</h3>
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Select Date</mat-label>
+        <input matInput [matDatepicker]="picker" placeholder="Choose date" (dateChange)="onDateChange($event.value)">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+    </section>
+
+    <!-- Step 2: Pick Table -->
+    <section class="step-section" *ngIf="availableTables.length">
+      <h3>2. Pick Table</h3>
+      <mat-chip-listbox [(ngModel)]="selectedTableId" (ngModelChange)="onSelectionChange()">
+        <mat-chip-option *ngFor="let table of availableTables" [value]="table.id">
+          Table {{ table.number }} ({{ table.seats }} seats)
+        </mat-chip-option>
+      </mat-chip-listbox>
+    </section>
+
+    <!-- Step 3: Pick Game -->
+    <section class="step-section" *ngIf="availableGames.length">
+      <h3>3. Pick Game</h3>
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Select Game</mat-label>
+        <mat-select [(value)]="selectedGameId" (selectionChange)="onSelectionChange()">
+          <mat-option *ngFor="let game of availableGames" [value]="game.id">{{ game.name }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </section>
+
+    <!-- Step 4: Pick Time -->
+    <section class="step-section" *ngIf="startTimes.length">
+      <h3>4. Time Selection</h3>
+      <div class="time-fields">
+        <mat-form-field appearance="fill" class="half-width">
+          <mat-label>Start Time</mat-label>
+          <mat-select [(value)]="selectedStartTime" (selectionChange)="onStartTimeChange()">
+            <mat-option *ngFor="let time of startTimes" [value]="time">{{ time }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="half-width">
+          <mat-label>End Time</mat-label>
+          <mat-select [(value)]="selectedEndTime">
+            <mat-option *ngFor="let time of endTimes" [value]="time">{{ time }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </section>
+  </mat-card-content>
+
+  <mat-card-actions align="end">
+    <button mat-raised-button color="primary" [disabled]="!selectedEndTime" (click)="onSubmit()">Confirm Session</button>
+  </mat-card-actions>
+</mat-card>
