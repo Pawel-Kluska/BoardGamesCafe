@@ -55,13 +55,6 @@ public class ReservationService {
                 .findFirst().orElseThrow(EntityNotFoundException::new);
         Reservation saved = reservationRepository.save(reservation);
 
-        emailService.sendEmail(
-                reservation.getEmail(),
-                "Guest",
-                "Reservation Confirmation",
-                "Your reservation has been created for " + reservation.getDate() + " at " + reservation.getStartTime(),
-                "<p>Your reservation has been <strong>created</strong> for " + reservation.getDate() + " at " + reservation.getStartTime() + ".</p>"
-        );
 
         return dataMapper.mapToReservationDto(saved, game, table);
     }
@@ -87,11 +80,11 @@ public class ReservationService {
                 .findFirst().orElseThrow(EntityNotFoundException::new);
         Reservation updated = reservationRepository.save(reservation);
         emailService.sendEmail(
-                updated.getEmail(),
-                "Guest",
-                "Reservation Updated",
-                "Your reservation has been updated to " + updated.getDate() + " at " + updated.getStartTime(),
-                "<p>Your reservation has been <strong>updated</strong> to " + updated.getDate() + " at " + updated.getStartTime() + ".</p>"
+            reservation.getEmail(),
+            "Guest",
+            "Reservation Confirmation",
+            "Your reservation has been created for " + reservation.getDate() + " at " + reservation.getStartTime(),
+            "<p>Your reservation has been <strong>created</strong> for " + reservation.getDate() + " at " + reservation.getStartTime() + ".</p>"
         );
 
         return dataMapper.mapToReservationDto(updated, game, table);
