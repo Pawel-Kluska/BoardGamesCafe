@@ -22,5 +22,5 @@ public class SessionDto {
     private LocalTime startTime;
     @JsonFormat(pattern = "HH:mm")
     private LocalTime endTime;
-    private List<UserDto> users;
+    private List<String> userSessionEmails;
 }

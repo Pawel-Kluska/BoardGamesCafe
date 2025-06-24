@@ -34,15 +34,13 @@ public class SocialService {
     public List<SessionDto> getSessions(String email) throws JsonProcessingException {
         List<Session> sessions = socialRepository.findBySessionUsers_Email(email);
         AllGamesAndTablesDto allGamesAndTables = rabbitClient.getAllGamesAndTables();
-        List<UserDto> users = keycloakUserService.getAllUsers();
-        return dataMapper.mapToSessionDtoList(sessions, allGamesAndTables.getGames(), allGamesAndTables.getTables(), users);
+        return dataMapper.mapToSessionDtoList(sessions, allGamesAndTables.getGames(), allGamesAndTables.getTables());
     }
 
     public List<SessionDto> getSessions(LocalDate localDate) throws JsonProcessingException {
         List<Session> sessions = socialRepository.findByDate(localDate);
         AllGamesAndTablesDto allGamesAndTables = rabbitClient.getAllGamesAndTables();
-        List<UserDto> users = keycloakUserService.getAllUsers();
-        return dataMapper.mapToSessionDtoList(sessions, allGamesAndTables.getGames(), allGamesAndTables.getTables(), users);
+        return dataMapper.mapToSessionDtoList(sessions, allGamesAndTables.getGames(), allGamesAndTables.getTables());
     }
 
     public Session addToSession(Session sessionData) throws JsonProcessingException {

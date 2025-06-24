@@ -6,6 +6,7 @@ import com.socialmicroservice.dto.SessionDto;
 import com.socialmicroservice.dto.TableDto;
 import com.socialmicroservice.dto.UserDto;
 import com.socialmicroservice.entities.Session;
+import com.socialmicroservice.entities.SessionUser;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
 @Component
 public class DataMapper {
 
-    public SessionDto mapToSessionDto(Session session, GameDto game, TableDto table, List<UserDto> users) {
+    public SessionDto mapToSessionDto(Session session, GameDto game, TableDto table) {
         SessionDto sessionDto = new SessionDto();
         sessionDto.setId(session.getId());
         sessionDto.setDate(session.getDate());
@@ -27,14 +28,15 @@ public class DataMapper {
         sessionDto.setTableNumber(table.getNumber());
         sessionDto.setTableSeats(table.getSeats());
         sessionDto.setEndTime(session.getEndTime());
-        sessionDto.setUsers(users);
+        sessionDto.setUserSessionEmails(session.getSessionUsers().stream()
+                .map(SessionUser::getEmail)
+                .collect(Collectors.toList()));
         return sessionDto;
     }
 
     public List<SessionDto> mapToSessionDtoList(List<Session> sessions,
                                                 List<GameDto> games,
-                                                List<TableDto> tables,
-                                                List<UserDto> users) {
+                                                List<TableDto> tables) {
         Map<Long, GameDto> gameMap = games.stream()
                 .collect(Collectors.toMap(GameDto::getId, Function.identity()));
 
@@ -45,13 +47,7 @@ public class DataMapper {
                 .map(session -> {
                     GameDto game = gameMap.get(session.getGameId());
                     TableDto table = tableMap.get(session.getTableId());
-                    List<UserDto> sessionUsers = session.getSessionUsers().stream()
-                            .map(user -> users.stream()
-                                    .filter(u -> u.getEmail().equals(user.getEmail()))
-                                    .findFirst()
-                                    .orElse(null))
-                            .toList();
-                    return mapToSessionDto(session, game, table, sessionUsers);
+                    return mapToSessionDto(session, game, table);
 
                 })
                 .collect(Collectors.toList());
