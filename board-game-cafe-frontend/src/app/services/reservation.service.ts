@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { formatDate } from '@angular/common';
 
 export interface Reservation {
   id?: number;
@@ -37,7 +38,20 @@ export class ReservationService {
   }
 
   updateReservation(reservation: Reservation): Observable<Reservation> {
-    return this.http.put<Reservation>(this.baseUrl, reservation);
+    const reservationToUpdate: Reservation = {
+      id: reservation.id, 
+      email: reservation.email.trim(),
+      tableId: reservation.tableId,
+      gameId: reservation.gameId,
+      date: formatDate(reservation.date, 'yyyy-MM-dd', 'en-US'),
+      startTime: reservation.startTime,
+      endTime: reservation.endTime,
+      status: reservation.status as 'CONFIRMED' | 'PENDING' | 'CANCELED'
+    };
+
+    return this.http.put<Reservation>(this.baseUrl, reservationToUpdate, {
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 
   deleteReservation(reservation: Reservation): Observable<void> {

@@ -13,6 +13,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { CommonModule } from '@angular/common';
+import { KeycloakService } from 'keycloak-angular';
+import { formatDate } from '@angular/common';
 @Component({
   selector: 'app-reserve-table',
   templateUrl: './reserve-table.component.html',
@@ -35,132 +37,157 @@ import { CommonModule } from '@angular/common';
   MatChipsModule,
   ]
 })
-export class ReserveTableComponent implements OnInit {
-  reservationForm: FormGroup;
-  availableTables: Table[] = [];
-  availableGames: Game[] = [];
+export class ReserveTableComponent{
   selectedDate: Date | null = null;
   selectedTableId: number | null = null;
   selectedGameId: number | null = null;
+
   allReservations: Reservation[] = [];
-  availableHours: string[] = [];
+  availableTables: Table[] = [];
+  availableGames: Game[] = [];
 
-  private adminService = inject(AdminService);
-  private reservationService = inject(ReservationService);
-  
+  startTimes: string[] = [];
+  endTimes: string[] = [];
+
+  selectedStartTime: string | null = null;
+  selectedEndTime: string | null = null;
+
   constructor(
-    private fb: FormBuilder,
-    private snackBar: MatSnackBar
-  ) {
-    this.reservationForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      date: [null, Validators.required],
-      tableId: [null, Validators.required],
-      gameId: [null, Validators.required],
-      startTime: ['', Validators.required],
-      endTime: ['', Validators.required],
-    });
-  }
+    private reservationService: ReservationService,
+    private adminService: AdminService,
+    private keycloakService: KeycloakService,
+  ) {}
 
-  ngOnInit(): void {
-    this.reservationForm.get('date')?.valueChanges.subscribe(date => {
-      if (date) {
-        const formattedDate = date.toISOString().split('T')[0];
-        this.loadAvailability(formattedDate);
-      }
-    });
-  }
+  onDateChange(date: Date): void {
+    this.selectedDate = date;
+    const formattedDate = formatDate(date, 'yyyy-MM-dd', 'en-US');
 
-  loadAvailability(date: string) {
-    var data = signal(
-      this.adminService.getAllGamesAndTables(),
-    );
-    data().subscribe({
-      next: (response) => {
-        this.availableGames = response.games;
-        this.availableTables = response.tables;
-        console.log('Games and Tables fetched successfully:', response);
-      },
-      error: (error) => {
-        console.error('Error fetching games and tables:', error);
-      }
-    });
-  }
+    this.reservationService.getReservations({ date: formattedDate }).subscribe(reservations => {
+      this.allReservations = reservations;
 
-  onSubmit(): void {
-    if (this.reservationForm.valid) {
-      const formValue = this.reservationForm.value;
-      const reservation: Reservation = {
-        email: formValue.email,
-        tableId: formValue.tableId,
-        gameId: formValue.gameId,
-        date: formValue.date.toISOString().split('T')[0],
-        startTime: formValue.startTime,
-        endTime: formValue.endTime,
-        status: 'PENDING'
-      };
+      this.adminService.getAllGamesAndTables().subscribe(data => {
+        const workingHours = this.generateTimeSlots('10:00', '22:00', 30); // helper below
 
-      this.reservationService.addReservation(reservation).subscribe({
-        next: () => {
-          this.snackBar.open('Reservation created!', 'Close', { duration: 3000 });
-          this.reservationForm.reset();
-          this.availableTables = [];
-          this.availableGames = [];
-        },
-        error: () => {
-          this.snackBar.open('Error creating reservation', 'Close', { duration: 3000 });
-        }
+        // Filter tables with at least 1 free slot
+        this.availableTables = data.tables.filter(table => {
+          const tableReservations = reservations.filter(r => r.tableId === table.id);
+          return this.hasFreeSlot(workingHours, tableReservations);
+        });
+
+        // Filter games with at least 1 free slot
+        this.availableGames = data.games.filter(game => {
+          const gameReservations = reservations.filter(r => r.gameId === game.id);
+          return this.hasFreeSlot(workingHours, gameReservations);
+        });
       });
+    });
+  }
+  generateTimeSlots(start: string, end: string, interval: number): string[] {
+    const slots: string[] = [];
+    const [startHour, startMin] = start.split(':').map(Number);
+    const [endHour, endMin] = end.split(':').map(Number);
+
+    let current = new Date();
+    current.setHours(startHour, startMin, 0, 0);
+    const endTime = new Date();
+    endTime.setHours(endHour, endMin, 0, 0);
+
+    while (current < endTime) {
+      slots.push(current.toTimeString().slice(0, 5));
+      current.setMinutes(current.getMinutes() + interval);
+    }
+
+    return slots;
+  }
+  hasFreeSlot(slots: string[], reservations: Reservation[]): boolean {
+    for (let i = 0; i < slots.length - 1; i++) {
+      const slotStart = slots[i];
+      const slotEnd = slots[i + 1];
+
+      const isOverlapping = reservations.some(res =>
+        !(res.endTime <= slotStart || res.startTime >= slotEnd)
+      );
+
+      if (!isOverlapping) {
+        return true; // Found a free 30-min window
+      }
+    }
+    return false;
+  }
+
+  onSelectionChange(): void {
+    if (this.selectedTableId && this.selectedGameId && this.selectedDate) {
+      const dateStr = formatDate(this.selectedDate, 'yyyy-MM-dd', 'en-US');
+
+      const relevant = this.allReservations.filter(r =>
+        r.date === dateStr &&
+        r.tableId === this.selectedTableId &&
+        r.gameId === this.selectedGameId
+      );
+
+      this.startTimes = this.generateAvailableTimeSlots(relevant);
+      this.endTimes = [];
+      this.selectedStartTime = null;
+      this.selectedEndTime = null;
     }
   }
 
-  selectTable(table: Table) {
-  this.reservationForm.patchValue({ tableId: table.id });
-}
+  onStartTimeChange(): void {
+    if (this.selectedStartTime) {
+      const startIdx = this.startTimes.indexOf(this.selectedStartTime);
+      this.endTimes = this.startTimes.slice(startIdx + 1, startIdx + 5); // Next 4 slots after selected start time
+    }
+  }
 
-selectGame(game: Game) {
-  this.reservationForm.patchValue({ gameId: game.id });
-}
+  generateAvailableTimeSlots(reservations: Reservation[]): string[] {
+    const slots: string[] = [];
+    const startHour = 10;
+    const endHour = 23;
 
-onDateChange(date: Date): void {
-  this.selectedDate = date;
-  const formattedDate = date.toISOString().split('T')[0];
+    for (let hour = startHour; hour < endHour; hour++) {
+      ['00', '30'].forEach(min => {
+        slots.push(`${hour.toString().padStart(2, '0')}:${min}`);
+      });
+    }
 
-  this.reservationService.getReservations({ date: formattedDate }).subscribe(reservations => {
-    this.allReservations = reservations;
+    const reservedPairs = reservations.map(r => ({
+      start: r.startTime,
+      end: r.endTime,
+    }));
 
-    // Filter available tables
-    this.adminService.getAllGamesAndTables().subscribe(data => {
-      const reservedTableIds = reservations.map(r => r.tableId);
-      this.availableTables = data.tables.filter(t => !reservedTableIds.includes(t.id));
-
-      const reservedGameIds = reservations.map(r => r.gameId);
-      this.availableGames = data.games.filter(g => !reservedGameIds.includes(g.id));
+    return slots.filter(time => {
+      const timeDate = this.parseTime(time);
+      return !reservedPairs.some(res =>
+        timeDate >= this.parseTime(res.start) && timeDate < this.parseTime(res.end)
+      );
     });
-  });
+  }
+
+  private parseTime(t: string): number {
+    const [h, m] = t.split(':').map(Number);
+    return h * 60 + m;
+  }
+
+  async onSubmit(): Promise<void> {
+    if (this.selectedDate && this.selectedTableId && this.selectedGameId && this.selectedStartTime && this.selectedEndTime) {
+      const profile = await this.keycloakService.loadUserProfile();
+      const formattedDate = formatDate(this.selectedDate, 'yyyy-MM-dd', 'en-US');
+
+      const reservation: Reservation = {
+        email: profile.email || '',
+        date: formattedDate,
+        tableId: this.selectedTableId,
+        gameId: this.selectedGameId,
+        startTime: this.selectedStartTime,
+        endTime: this.selectedEndTime,
+        status: 'PENDING'
+      };
+
+      this.reservationService.addReservation(reservation).subscribe(() => {
+        console.log('Reservation added successfully');
+        location.href = '/reservations/user';
+      });
+    }
+  }
 }
 
-onTableOrGameChange(): void {
-  if (!this.selectedTableId || !this.selectedGameId || !this.selectedDate) return;
-
-  // Filter reservations that match current table and game
-  const selectedDateStr = this.selectedDate.toISOString().split('T')[0];
-  const relevantReservations = this.allReservations.filter(r =>
-    r.date === selectedDateStr &&
-    r.tableId === this.selectedTableId &&
-    r.gameId === this.selectedGameId
-  );
-
-  this.availableHours = this.getAvailableHours(relevantReservations);
-}
-
-getAvailableHours(reservations: Reservation[]): string[] {
-  const allHours = Array.from({ length: 12 }, (_, i) => 12 + i) // 12 to 23
-    .map(h => `${h.toString().padStart(2, '0')}:00`);
-
-  const reserved = new Set(reservations.map(r => r.startTime));
-
-  return allHours.filter(h => !reserved.has(h));
-}
-
-}

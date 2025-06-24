@@ -1,0 +1,95 @@
+.sticky-notes-board {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-bottom: 30px;
+}
+
+.sticky-note {
+  padding: 1rem;
+  box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  min-height: 160px;
+  position: relative;
+  transition: transform 0.2s ease;
+  background: #fff8c6;
+}
+
+.sticky-note:hover {
+  transform: scale(1.03);
+}
+
+.note-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+
+.status {
+  background-color: #eee;
+  padding: 0 6px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+.note-body {
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.note-actions {
+  display: flex;
+  justify-content: end;
+  margin-top: 0.75rem;
+  gap: 0.5rem;
+}
+
+.filter-field {
+  width: 250px;
+  margin-top: 1rem;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.custom-chip {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 4px 0;
+  color: white;
+  width: fit-content;
+}
+
+/* Status-specific colors */
+.chip-confirmed {
+  background-color: #52be9c; // Green
+}
+
+.chip-pending {
+  background-color: #8573d5; // Orange
+}
+
+.chip-canceled {
+  background-color: #ec5484; // Red
+}
+
+.chip-default {
+  background-color: #9e9e9e; // Gray
+}
+
+.primary-icon-button mat-icon {
+    color: #cb0b68; // if using custom SCSS theme
+}

@@ -1,0 +1,41 @@
+<mat-card>
+  <h2>📅 My Reservations</h2>
+
+  <div class="header-container">
+  <!-- Filter by Date -->
+  <!-- <mat-form-field appearance="outline" class="filter-field">
+    <mat-label>Filter by date</mat-label>
+    <input matInput [matDatepicker]="picker" (dateChange)="filterByDate($event)" />
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field> -->
+
+    <button mat-raised-button color="primary" (click)="redirectToCreateReservationView()">
+      Create Reservation
+    </button>
+  </div>
+  <!-- Reservation Sticky Notes -->
+  <div class="sticky-notes-board">
+    <div
+      class="sticky-note"
+      *ngFor="let reservation of reservations"
+      [ngStyle]="{ 'background-color': getRandomColor(reservation.id || 1) }"
+    >
+      <div class="note-header">
+        <strong>{{ reservation.date }} {{ reservation.startTime }}-{{ reservation.endTime }}</strong>
+        <div class="custom-chip" [ngClass]="getStatusClass(reservation.status)">
+          {{ reservation.status }}
+        </div>
+      </div>
+      <div class="note-body">
+        <p><b>Game:</b> {{ getGameName(reservation.gameId) }}</p>
+        <p><b>Table:</b> {{ getTableLabel(reservation.tableId) }}</p>
+      </div>
+      <div class="note-actions">
+        <button mat-icon-button class="primary-icon-button" (click)="deleteReservation(reservation)">
+          <mat-icon>cancel</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+</mat-card>
