@@ -2,11 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-export interface SessionUser {
-  id?: number;
-  email: string;
-}
-
 export interface Session {
   id?: number;
   gameId: number;
@@ -14,7 +9,7 @@ export interface Session {
   date: string; // format: 'YYYY-MM-DD'
   startTime: string; // format: 'HH:mm'
   endTime: string;   // format: 'HH:mm'
-  sessionUsers?: SessionUser[];
+  userSessionEmails?: string[];
 }
 
 @Injectable({
@@ -50,7 +45,7 @@ export class SessionService {
         date: session.date,
         startTime: session.startTime,
         endTime: session.endTime,
-        sessionUsers: session.sessionUsers
+        userSessionEmails: session.userSessionEmails
       };
     return this.http.post<Session>(this.baseUrl,  sessionTemp , {
       headers: { 'Content-Type': 'application/json' }

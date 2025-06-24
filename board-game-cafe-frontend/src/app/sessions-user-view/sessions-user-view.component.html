@@ -17,9 +17,9 @@
       <div class="note-body">
         <p><b>Game:</b> {{ getGameName(session.gameId) }}</p>
         <p><b>Table:</b> {{ getTableLabel(session.tableId) }}</p>
-        <p><b>Other Players:</b> </p>
-        <div *ngFor="let user of session.sessionUsers">
-          <p>{{ user.email }}</p>
+        <p><b>Players:</b> </p>
+        <div *ngFor="let user of session.userSessionEmails">
+          <p>{{ user }}</p>
         </div>
       </div>
       <div class="note-actions">

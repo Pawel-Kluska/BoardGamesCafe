@@ -288,10 +288,7 @@ export class SessionCreateComponent {
         date: formattedDate,
         startTime: this.selectedStartTime,
         endTime: this.selectedEndTime,
-        sessionUsers: [{
-          id: undefined,
-          email: email || ""
-        }]
+        userSessionEmails: [email || ''] // Ensure email is a string
       };
 
       this.sessionService.addSession(session).subscribe(() => {
