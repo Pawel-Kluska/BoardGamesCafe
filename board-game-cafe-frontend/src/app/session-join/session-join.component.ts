@@ -4,32 +4,35 @@ import { SessionService, Session } from '../services/session.service';
 import { AdminService, Game, Table } from '../services/admin.service';
 import { DeleteDialogComponent } from '../delete-dialog/delete-dialog.component';
 import { KeycloakService } from 'keycloak-angular';
-import { CommonModule } from '@angular/common';
+import { CommonModule, formatDate } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
 
 @Component({
-  selector: 'app-user-sessions-view',
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatCardModule,
-    MatButtonModule,
-    MatIconModule,
+  selector: 'app-session-join',
+  imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule, MatDialogModule,
+    MatButtonModule, 
+    MatIconModule,    
     MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatNativeDateModule
   ],
-  templateUrl: './sessions-user-view.component.html',
-  styleUrls: ['./sessions-user-view.component.scss']
+  templateUrl: './session-join.component.html',
+  styleUrl: './session-join.component.scss'
 })
-export class UserSessionsViewComponent implements OnInit {
-
-
+export class SessionJoinComponent {
   sessions: Session[] = [];
   games: Game[] = [];
   tables: Table[] = [];
-  userEmail: string = 'user@example.com';
+  filterDate: string = ''; 
 
   sessionService = inject(SessionService);
   adminService = inject(AdminService);
@@ -37,7 +40,6 @@ export class UserSessionsViewComponent implements OnInit {
   dialog = inject(MatDialog);
 
   async ngOnInit(): Promise<void> {
-    this.userEmail = (await this.keycloakService.loadUserProfile()).email || '';
     this.loadSessions();
     this.adminService.getAllGamesAndTables().subscribe(data => {
       this.games = data.games;
@@ -45,8 +47,25 @@ export class UserSessionsViewComponent implements OnInit {
     });
   }
 
+
+    onFilterDateChange(date: Date | null): void {
+    if (!date) {
+      return;
+    }
+    const formattedDate = formatDate(date, 'yyyy-MM-dd', 'en-US');
+    this.filterDate = formattedDate;
+    this.applyDateFilter();
+  }
+
+  applyDateFilter(): void {
+    if (!this.filterDate) {
+      return;
+    }
+    this.loadSessions();
+  }
+
   loadSessions(): void {
-    this.sessionService.getSessions({ email: this.userEmail }).subscribe((res) => {
+    this.sessionService.getSessions({ date: this.filterDate }).subscribe((res) => {
       this.sessions = res;
     });
   }
@@ -69,31 +88,24 @@ export class UserSessionsViewComponent implements OnInit {
     }
   }
 
-  deleteSession(session: Session): void {
-    const dialogRef = this.dialog.open(DeleteDialogComponent, {
-      width: '400px',
-      data: `Are you sure you want to disconnect from session?`,
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.sessionService.deleteSession(session.id!, this.userEmail).subscribe(() => {
-          this.loadSessions();
-        });
-      }
-    });
-  }
-
-  redirectToCreateSession() {
+  redirectToGames() {
     window.location.href = '/sessions/create';
   }
-
-  redirectToSessions() {
-  window.location.href = '/sessions/join';
-}
 
   getRandomColor(seed: number): string {
     const colors = ['#ffc7f8', '#ffc7ee', '#ffc7e6', '#ffc7dc', '#ffc7d4'];
     return colors[seed % colors.length];
+  }
+
+  async joinSession(session: Session | null): Promise<void> {
+    if (!session) {
+      throw new Error('Invalid session');
+    }
+    const profile = await this.keycloakService.loadUserProfile();
+    session.userSessionEmails = [profile.email || ''];
+    // Implement the join session logic here
+    this.sessionService.addSession(session).subscribe(() => {
+      window.location.href = '/sessions';
+    });
   }
 }

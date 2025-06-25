@@ -65,11 +65,7 @@ export class SessionCreateComponent {
         this.adminService.getAllGamesAndTables().subscribe(data => {
           const workingHours = this.generateTimeSlots('10:00', '22:00', 30); // helper below
   
-          // Filter tables with at least 1 free slot
-          this.availableTables = data.tables.filter(table => {
-            const tableReservations = reservations.filter(r => r.tableId === table.id);
-            return this.hasFreeSlot(workingHours, tableReservations);
-          });
+          this.availableTables = data.tables;
   
           // Filter games with at least 1 free slot
           this.availableGames = data.games.filter(game => {
@@ -113,12 +109,11 @@ export class SessionCreateComponent {
     }
   
     onSelectionChange(): void {
-      if (this.selectedTableId && this.selectedGameId && this.selectedDate) {
+      if (this.selectedGameId && this.selectedDate) {
         const dateStr = formatDate(this.selectedDate, 'yyyy-MM-dd', 'en-US');
   
         const relevant = this.allReservations.filter(r =>
           r.date === dateStr &&
-          r.tableId === this.selectedTableId &&
           r.gameId === this.selectedGameId
         );
   
@@ -273,7 +268,6 @@ export class SessionCreateComponent {
   async onSubmit(): Promise<void> {
     if (
       this.selectedDate &&
-      this.selectedTableId &&
       this.selectedGameId &&
       this.selectedStartTime &&
       this.selectedEndTime
@@ -283,8 +277,9 @@ export class SessionCreateComponent {
       const formattedDate = formatDate(this.selectedDate, 'yyyy-MM-dd', 'en-US');
 
       const session: Session = {
+        id: undefined, // Ensure id is undefined for new session
         gameId: this.selectedGameId,
-        tableId: this.selectedTableId,
+        tableId: this.availableTables[0]?.id || 0, // Ensure tableId is nullable
         date: formattedDate,
         startTime: this.selectedStartTime,
         endTime: this.selectedEndTime,

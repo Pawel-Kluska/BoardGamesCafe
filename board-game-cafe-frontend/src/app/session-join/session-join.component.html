@@ -2,10 +2,12 @@
   <h2 style="margin-left: 20px;">My Sessions</h2>
 
   <div class="header-container">
-    <div class="buttons-container">
-      <button mat-raised-button color="primary" (click)="redirectToSessions()">Join Session <mat-icon>accessibility_new</mat-icon></button>
-      <button mat-raised-button color="primary" (click)="redirectToCreateSession()">Create Session <mat-icon>add</mat-icon></button>
-    </div>
+    <mat-form-field appearance="fill" class="date-filter">
+      <mat-label>Choose Date</mat-label>
+      <input matInput [matDatepicker]="filterPicker" (dateChange)="onFilterDateChange($event.value)" placeholder="Choose date" />
+      <mat-datepicker-toggle matSuffix [for]="filterPicker"></mat-datepicker-toggle>
+      <mat-datepicker #filterPicker></mat-datepicker>
+    </mat-form-field>
   </div>
 
   <div class="sticky-notes-board">
@@ -25,8 +27,8 @@
         </div>
       </div>
       <div class="note-actions">
-        <button mat-icon-button class="primary-icon-button" (click)="deleteSession(session)">
-          <mat-icon>delete</mat-icon>
+        <button mat-icon-button class="primary-icon-button" (click)="joinSession(session)">
+          <mat-icon>control_point</mat-icon>
         </button>
       </div>
     </div>

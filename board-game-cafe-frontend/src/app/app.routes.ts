@@ -6,6 +6,7 @@ import { ReservationsViewComponent } from './reservations-view/reservations-view
 import { SessionViewComponent } from './sessions-view/sessions-view.component';
 import { UserSessionsViewComponent } from './sessions-user-view/sessions-user-view.component';
 import { SessionCreateComponent } from './session-create/session-create.component';
+import { SessionJoinComponent } from './session-join/session-join.component';
 
 export const routes: Routes = [
     {path: 'games', component: GamesViewComponent},
@@ -14,5 +15,6 @@ export const routes: Routes = [
     {path: 'reservations/reserve', component: ReserveTableComponent},
     {path: 'sessions/admin', component: SessionViewComponent},
     {path: 'sessions', component: UserSessionsViewComponent},
-    {path: 'sessions/create', component: SessionCreateComponent}
+    {path: 'sessions/create', component: SessionCreateComponent},
+    {path: 'sessions/join', component: SessionJoinComponent}
 ];

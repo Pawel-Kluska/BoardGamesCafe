@@ -37,15 +37,22 @@ export class SessionService {
   /**
    * Add a new session (POST).
    */
+  
   addSession(session: Session): Observable<Session> {
-      const sessionTemp: Session = {
+    
+    if(!session.userSessionEmails || session.userSessionEmails.length === 0) {
+      throw new Error('Session must have at least one user email.');
+    }
+
+    const emailObjects = session.userSessionEmails.map(email => ({ email }));
+      const sessionTemp = {
         id: session.id,
         gameId: session.gameId,
         tableId: session.tableId,
         date: session.date,
         startTime: session.startTime,
         endTime: session.endTime,
-        userSessionEmails: session.userSessionEmails
+        sessionUsers: emailObjects
       };
     return this.http.post<Session>(this.baseUrl,  sessionTemp , {
       headers: { 'Content-Type': 'application/json' }

@@ -16,19 +16,9 @@
       </mat-form-field>
     </section>
 
-    <!-- Step 2: Pick Table -->
-    <section class="step-section" *ngIf="availableTables.length">
-      <h3>2. Pick Table</h3>
-      <mat-chip-listbox [(ngModel)]="selectedTableId" (ngModelChange)="onSelectionChange()">
-        <mat-chip-option *ngFor="let table of availableTables" [value]="table.id">
-          Table {{ table.number }} ({{ table.seats }} seats)
-        </mat-chip-option>
-      </mat-chip-listbox>
-    </section>
-
     <!-- Step 3: Pick Game -->
     <section class="step-section" *ngIf="availableGames.length">
-      <h3>3. Pick Game</h3>
+      <h3>2. Pick Game</h3>
       <mat-form-field appearance="fill" class="full-width">
         <mat-label>Select Game</mat-label>
         <mat-select [(value)]="selectedGameId" (selectionChange)="onSelectionChange()">
@@ -39,7 +29,7 @@
 
     <!-- Step 4: Pick Time -->
     <section class="step-section" *ngIf="startTimes.length">
-      <h3>4. Time Selection</h3>
+      <h3>3. Time Selection</h3>
       <div class="time-fields">
         <mat-form-field appearance="fill" class="half-width">
           <mat-label>Start Time</mat-label>
